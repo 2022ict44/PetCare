@@ -1,56 +1,121 @@
-# Welcome to your Expo app 👋
+# 🐾 PetCare – Pet Care Management App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 📌 Project Overview
 
-## Get started
+PetCare is a mobile application developed using React Native to help pet owners manage their pets and their daily care activities.
 
-1. Install dependencies
+The application allows users to store pet information, manage activities, and schedule reminders. It uses a local SQLite database to store information on the device and supports offline functionality.
+
+## ✨ Main Features
+
+### 🐶 Pet Management
+- Add new pets.
+- View saved pet details.
+- Search pets by name, type, and breed.
+- Filter pets by category.
+- Delete pet records.
+
+### 📋 Activity Management
+- Add pet care activities.
+- View saved activities.
+- Delete activities.
+
+### ⏰ Reminder Management
+- Create reminders with dates and times.
+- Schedule local notifications.
+- View saved reminders.
+- Delete reminders and cancel their scheduled notifications.
+- Validate date and time inputs.
+
+### 🏠 Home Dashboard
+- View a summary of pet information.
+- Display activity and reminder counts.
+- Navigate between application screens.
+
+### 📶 Offline Functionality
+- Uses a local SQLite database.
+- Stores application data on the device.
+- Supports the main application features without an active internet connection after the app has loaded.
+
+## 🛠️ Technologies Used
+
+- React Native
+- Expo
+- TypeScript
+- Expo Router
+- Expo SQLite
+- Expo Notifications
+- JavaScript
+- Visual Studio Code
+
+## 💾 Database
+
+PetCare uses SQLite as its local database.
+
+The database contains the following tables:
+
+- `pets` – Stores pet information.
+- `activities` – Stores pet care activities.
+- `reminders` – Stores reminder details and notification IDs.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js
+- npm
+- Visual Studio Code
+- Expo Go (for testing on a mobile device)
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/2022ict44/PetCare.git
+   ```
+
+2. Navigate to the project folder:
+
+   ```bash
+   cd PetCare
+   ```
+
+3. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+4. Start the Expo development server:
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+5. Scan the QR code using Expo Go to open the application on your mobile device.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🧪 Testing
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+The following functionalities have been tested:
 
-## Get a fresh project
+- Adding and deleting pets.
+- Searching and filtering pets.
+- Managing pet activities.
+- Creating and deleting reminders.
+- Local notification scheduling.
+- Navigation between screens.
+- Offline functionality with Airplane Mode enabled while the app was running.
+- Data persistence after closing and reopening the app.
 
-When you're ready, run:
+## 👩‍💻 Developer
 
-```bash
-npm run reset-project
-```
+**Project Name:** PetCare
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+**GitHub Repository:** https://github.com/2022ict44/PetCare
 
-### Other setup steps
+---
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+*PetCare – Making pet care easier!* 🐾
