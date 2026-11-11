@@ -4,7 +4,7 @@
 
 PetCare is a mobile application developed using React Native to help pet owners manage their pets and their daily care activities.
 
-The application allows users to store pet information, manage activities, and schedule reminders. It uses a local SQLite database to store information on the device and supports offline functionality.
+The application allows users to store pet information, manage activities, schedule reminders, and maintain pet health records. It uses a local SQLite database to store information on the device and supports offline functionality.
 
 ## ✨ Main Features
 
@@ -27,15 +27,36 @@ The application allows users to store pet information, manage activities, and sc
 - Delete reminders and cancel their scheduled notifications.
 - Validate date and time inputs.
 
+### 🩺 Health Records Management
+- Add health records for pets.
+- Maintain vaccination, checkup, and medicine records.
+- Save record dates, descriptions, and optional notes.
+- View saved health records with pet details.
+- Filter health records by record type.
+- Delete health records.
+
 ### 🏠 Home Dashboard
 - View a summary of pet information.
 - Display activity and reminder counts.
+- Display the total number of health records.
 - Navigate between application screens.
 
 ### 📶 Offline Functionality
 - Uses a local SQLite database.
 - Stores application data on the device.
 - Supports the main application features without an active internet connection after the app has loaded.
+
+## 📱 Application Screens
+
+PetCare contains five main screens:
+
+1. Home
+2. My Pets
+3. Activities
+4. Reminders
+5. Health Records
+
+The application uses Expo Router for navigation between screens.
 
 ## 🛠️ Technologies Used
 
@@ -57,6 +78,9 @@ The database contains the following tables:
 - `pets` – Stores pet information.
 - `activities` – Stores pet care activities.
 - `reminders` – Stores reminder details and notification IDs.
+- `health_records` – Stores pet health records, including record type, date, description, and notes.
+
+All application data is stored locally on the device.
 
 ## 🚀 Getting Started
 
@@ -106,7 +130,11 @@ The following functionalities have been tested:
 - Managing pet activities.
 - Creating and deleting reminders.
 - Local notification scheduling.
-- Navigation between screens.
+- Adding and deleting health records.
+- Filtering health records by type.
+- Displaying the total health record count on the Home Dashboard.
+- Navigation between all five screens.
+- Input validation.
 - Offline functionality with Airplane Mode enabled while the app was running.
 - Data persistence after closing and reopening the app.
 
@@ -114,7 +142,8 @@ The following functionalities have been tested:
 
 **Project Name:** PetCare
 
-**GitHub Repository:** https://github.com/2022ict44/PetCare
+**GitHub Repository:**  
+https://github.com/2022ict44/PetCare
 
 ---
 
