@@ -14,12 +14,14 @@ import {
   getAllPets,
   getAllActivities,
   getAllReminders,
+  getAllHealthRecords,
 } from '../database/petDatabase';
 
 export default function HomeScreen() {
   const [petCount, setPetCount] = useState(0);
   const [activityCount, setActivityCount] = useState(0);
   const [reminderCount, setReminderCount] = useState(0);
+  const [healthRecordCount, setHealthRecordCount] = useState(0);
 
   // Load dashboard counts from SQLite
   const loadDashboard = () => {
@@ -29,10 +31,12 @@ export default function HomeScreen() {
       const pets = getAllPets();
       const activities = getAllActivities();
       const reminders = getAllReminders();
+      const healthRecords = getAllHealthRecords();
 
       setPetCount(pets.length);
       setActivityCount(activities.length);
       setReminderCount(reminders.length);
+      setHealthRecordCount(healthRecords.length);
     } catch (error) {
       console.log('Unable to load dashboard:', error);
     }
@@ -120,6 +124,21 @@ export default function HomeScreen() {
 
             <Text style={styles.reminderNumber}>
               {reminderCount} reminders saved
+            </Text>
+          </View>
+        </View>
+
+        {/* Health Records Summary */}
+        <View style={styles.reminderSummary}>
+          <Text style={styles.reminderEmoji}>🏥</Text>
+
+          <View>
+            <Text style={styles.reminderTitle}>
+              Total Health Records
+            </Text>
+
+            <Text style={styles.reminderNumber}>
+              {healthRecordCount} health records saved
             </Text>
           </View>
         </View>

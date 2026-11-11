@@ -28,16 +28,24 @@ export const initDatabase = () => {
       time TEXT NOT NULL,
       notificationId TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS health_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      petId INTEGER NOT NULL,
+      recordType TEXT NOT NULL,
+      date TEXT NOT NULL,
+      description TEXT NOT NULL,
+      notes TEXT
+    );
   `);
 
   // Add notificationId to existing reminders table
-  // This keeps previously saved reminders.
   try {
     db.execSync(
       'ALTER TABLE reminders ADD COLUMN notificationId TEXT'
     );
   } catch (error) {
-    // Column already exists. No action needed.
+    // Column already exists.
   }
 
   console.log('PetCare database initialized successfully');
@@ -123,7 +131,6 @@ export const getAllReminders = () => {
   }>('SELECT * FROM reminders ORDER BY id DESC');
 };
 
-// Get notification ID for a reminder
 export const getReminderNotificationId = (id: number) => {
   const reminder = db.getFirstSync<{
     notificationId: string | null;
@@ -135,7 +142,51 @@ export const getReminderNotificationId = (id: number) => {
   return reminder?.notificationId ?? null;
 };
 
-// Delete reminder from database
 export const deleteReminderFromDatabase = (id: number) => {
   db.runSync('DELETE FROM reminders WHERE id = ?', [id]);
+};
+
+// HEALTH RECORD FUNCTIONS
+
+export type HealthRecord = {
+  id: number;
+  petId: number;
+  petName?: string;
+  recordType: string;
+  date: string;
+  description: string;
+  notes: string | null;
+};
+
+export const addHealthRecordToDatabase = (
+  petId: number,
+  recordType: string,
+  date: string,
+  description: string,
+  notes: string
+) => {
+  db.runSync(
+    `INSERT INTO health_records
+    (petId, recordType, date, description, notes)
+    VALUES (?, ?, ?, ?, ?)`,
+    [petId, recordType, date, description, notes]
+  );
+};
+
+export const getAllHealthRecords = () => {
+  return db.getAllSync<HealthRecord>(`
+    SELECT
+      health_records.*,
+      pets.name AS petName
+    FROM health_records
+    LEFT JOIN pets ON health_records.petId = pets.id
+    ORDER BY health_records.id DESC
+  `);
+};
+
+export const deleteHealthRecordFromDatabase = (id: number) => {
+  db.runSync(
+    'DELETE FROM health_records WHERE id = ?',
+    [id]
+  );
 };
