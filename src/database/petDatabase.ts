@@ -14,13 +14,6 @@ export const initDatabase = () => {
       age TEXT
     );
 
-    CREATE TABLE IF NOT EXISTS activities (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      activity TEXT NOT NULL,
-      date TEXT NOT NULL,
-      time TEXT NOT NULL
-    );
-
     CREATE TABLE IF NOT EXISTS reminders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
@@ -49,6 +42,9 @@ export const initDatabase = () => {
       petType TEXT NOT NULL DEFAULT 'All'
     );
   `);
+
+  // Remove the unused activities table
+  db.execSync('DROP TABLE IF EXISTS activities;');
 
   // Existing database migrations
   try {
@@ -100,32 +96,6 @@ export const getAllPets = () => {
 
 export const deletePetFromDatabase = (id: number) => {
   db.runSync('DELETE FROM pets WHERE id = ?', [id]);
-};
-
-// ACTIVITY FUNCTIONS
-
-export const addActivityToDatabase = (
-  activity: string,
-  date: string,
-  time: string
-) => {
-  db.runSync(
-    'INSERT INTO activities (activity, date, time) VALUES (?, ?, ?)',
-    [activity, date, time]
-  );
-};
-
-export const getAllActivities = () => {
-  return db.getAllSync<{
-    id: number;
-    activity: string;
-    date: string;
-    time: string;
-  }>('SELECT * FROM activities ORDER BY id DESC');
-};
-
-export const deleteActivityFromDatabase = (id: number) => {
-  db.runSync('DELETE FROM activities WHERE id = ?', [id]);
 };
 
 // REMINDER FUNCTIONS
