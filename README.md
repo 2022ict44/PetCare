@@ -149,36 +149,57 @@ The following screenshots demonstrate the main application screens:
 ### Home Screen
 ![Home Screen](screenshots/home.jpeg)
 
+
+
 ### My Pets Screen
 ![My Pets Screen](screenshots/my-pets.jpeg)
+
+
 
 ### Pet Guide Screen
 ![Pet Guide Screen](screenshots/pet-guide.jpeg)
 
+
+
 ### Reminders Screen
 ![Reminder Screen](screenshots/reminder.jpeg)
 
+
+
 ### Health Records Screen
 ![Health Records Screen](screenshots/health-records.jpeg)
+
+
 
 ### Additional Application Features
 ### Add Pet
 ![Add Pet Screen](screenshots/add-pet.jpeg)
 
+
+
 ### Pet Details
 ![Pet Details Screen](screenshots/pet-details.jpeg)
+
+
 
 ### Add Reminder
 ![Add Reminder Screen](screenshots/add-reminder.jpeg)
 
+
+
 ### Reminder Notification
 ![Reminder Notification](screenshots/reminder-notification.jpeg)
+
+
 
 ### Add Health Record
 ![Add Health Record Screen](screenshots/add-health-record.jpeg)
 
+
+
 ### Health History
 ![Health History Screen](screenshots/health-history.jpeg)
+
 
 ## 👩‍💻 Developer
 
