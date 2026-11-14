@@ -30,8 +30,8 @@ export default function AppTabs() {
         />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="activities">
-        <NativeTabs.Trigger.Label>Activities</NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="pet-guide">
+        <NativeTabs.Trigger.Label>Pet Guide</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           src={require('@/assets/images/tabIcons/explore.png')}
           renderingMode="template"
