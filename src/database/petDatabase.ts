@@ -26,7 +26,8 @@ export const initDatabase = () => {
       title TEXT NOT NULL,
       date TEXT NOT NULL,
       time TEXT NOT NULL,
-      notificationId TEXT
+      notificationId TEXT,
+      completed INTEGER NOT NULL DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS health_records (
@@ -43,6 +44,15 @@ export const initDatabase = () => {
   try {
     db.execSync(
       'ALTER TABLE reminders ADD COLUMN notificationId TEXT'
+    );
+  } catch (error) {
+    // Column already exists.
+  }
+
+  // Add completed status to existing reminders table
+  try {
+    db.execSync(
+      'ALTER TABLE reminders ADD COLUMN completed INTEGER NOT NULL DEFAULT 0'
     );
   } catch (error) {
     // Column already exists.
@@ -107,6 +117,15 @@ export const deleteActivityFromDatabase = (id: number) => {
 
 // REMINDER FUNCTIONS
 
+export type Reminder = {
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+  notificationId: string | null;
+  completed: number;
+};
+
 export const addReminderToDatabase = (
   title: string,
   date: string,
@@ -122,13 +141,19 @@ export const addReminderToDatabase = (
 };
 
 export const getAllReminders = () => {
-  return db.getAllSync<{
-    id: number;
-    title: string;
-    date: string;
-    time: string;
-    notificationId: string | null;
-  }>('SELECT * FROM reminders ORDER BY id DESC');
+  return db.getAllSync<Reminder>(
+    'SELECT * FROM reminders ORDER BY date ASC, time ASC'
+  );
+};
+
+export const updateReminderCompletion = (
+  id: number,
+  completed: boolean
+) => {
+  db.runSync(
+    'UPDATE reminders SET completed = ? WHERE id = ?',
+    [completed ? 1 : 0, id]
+  );
 };
 
 export const getReminderNotificationId = (id: number) => {
