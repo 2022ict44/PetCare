@@ -78,7 +78,6 @@ PetCare uses SQLite as its local database.
 The database contains the following tables:
 
 - `pets` – Stores pet information.
-- `activities` – Stores pet care activity information.
 - `reminders` – Stores reminder details and notification IDs.
 - `health_records` – Stores pet health records.
 - `pet_guides` – Stores pet care guide information.
@@ -145,19 +144,25 @@ The following functionalities have been tested:
 
 ## 📸 Application Screenshots
 
-Add screenshots of the main application screens below:
+The following screenshots demonstrate the main application screens:
 
-- Home Screen
-- My Pets Screen
-- Pet Guide Screen
-- Reminders Screen
-- Health Records Screen
-
-Example:
-
-```markdown
+### Home Screen
 ![Home Screen](screenshots/home.png)
-```
+
+### My Pets Screen
+![My Pets Screen](screenshots/my-pets.png)
+
+### Pet Guide Screen
+![Pet Guide Screen](screenshots/pet-guide.png)
+
+### Reminders Screen
+![Reminders Screen](screenshots/reminders.png)
+
+### Health Records Screen
+![Health Records Screen](screenshots/health-records.png)
+
+### Additional Application Features
+
 
 ## 👩‍💻 Developer
 
