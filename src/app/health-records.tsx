@@ -25,14 +25,29 @@ type Pet = {
   name: string;
 };
 
+const checkupTypes = [
+  'General Checkup',
+  'Dental Checkup',
+  'Eye Checkup',
+  'Skin Checkup',
+  'Ear Checkup',
+  'Other',
+];
+
 export default function HealthRecordsScreen() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [records, setRecords] = useState<HealthRecord[]>([]);
   const [selectedPet, setSelectedPet] = useState<number | null>(null);
+
   const [recordType, setRecordType] = useState('Vaccination');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [notes, setNotes] = useState('');
+
+  const [selectedCheckup, setSelectedCheckup] = useState('');
+  const [otherCheckup, setOtherCheckup] = useState('');
+  const [showCheckupOptions, setShowCheckupOptions] = useState(false);
+
   const [showForm, setShowForm] = useState(false);
 
   const loadData = () => {
@@ -46,12 +61,32 @@ export default function HealthRecordsScreen() {
     }, [])
   );
 
+  const resetForm = () => {
+    setDate('');
+    setDescription('');
+    setNotes('');
+    setSelectedCheckup('');
+    setOtherCheckup('');
+    setShowCheckupOptions(false);
+  };
+
+  const changeRecordType = (type: string) => {
+    setRecordType(type);
+    setDescription('');
+    setNotes('');
+    setSelectedCheckup('');
+    setOtherCheckup('');
+    setShowCheckupOptions(false);
+  };
+
   const addRecord = () => {
-    if (!selectedPet || !date.trim() || !description.trim()) {
-      Alert.alert(
-        'Missing Information',
-        'Please select a pet and enter the date and description.'
-      );
+    if (!selectedPet) {
+      Alert.alert('Missing Information', 'Please select a pet.');
+      return;
+    }
+
+    if (!date.trim()) {
+      Alert.alert('Missing Information', 'Please enter the date.');
       return;
     }
 
@@ -60,17 +95,42 @@ export default function HealthRecordsScreen() {
       return;
     }
 
+    let finalDescription = description.trim();
+
+    if (recordType === 'Checkup') {
+      if (!selectedCheckup) {
+        Alert.alert('Missing Information', 'Please select a checkup type.');
+        return;
+      }
+
+      finalDescription =
+        selectedCheckup === 'Other'
+          ? otherCheckup.trim()
+          : selectedCheckup;
+
+      if (!finalDescription) {
+        Alert.alert('Missing Information', 'Please enter the checkup type.');
+        return;
+      }
+    } else if (!finalDescription) {
+      Alert.alert(
+        'Missing Information',
+        recordType === 'Vaccination'
+          ? 'Please enter the vaccine name.'
+          : 'Please enter the medicine name.'
+      );
+      return;
+    }
+
     addHealthRecordToDatabase(
       selectedPet,
       recordType,
       date.trim(),
-      description.trim(),
+      finalDescription,
       notes.trim()
     );
 
-    setDate('');
-    setDescription('');
-    setNotes('');
+    resetForm();
     setShowForm(false);
     loadData();
 
@@ -99,34 +159,72 @@ export default function HealthRecordsScreen() {
     ? records.filter((record) => record.petId === selectedPet)
     : records;
 
-  const renderRecord = ({ item }: { item: HealthRecord }) => (
-    <View style={styles.recordCard}>
-      <Text style={styles.petName}>
-        {item.petName ?? 'Unknown Pet'}
-      </Text>
+  const getDescriptionLabel = () => {
+    if (recordType === 'Vaccination') return 'Vaccine Name';
+    if (recordType === 'Medicine') return 'Medicine Name';
+    return 'Checkup Type';
+  };
 
-      <Text style={styles.recordType}>{item.recordType}</Text>
-      <Text style={styles.detail}>Date: {item.date}</Text>
-      <Text style={styles.detail}>
-        Description: {item.description}
-      </Text>
+  const getNotesLabel = () => {
+    if (recordType === 'Vaccination') {
+      return 'Notes (Situation after vaccination)';
+    }
 
-      {item.notes ? (
-        <Text style={styles.detail}>Notes: {item.notes}</Text>
-      ) : null}
+    if (recordType === 'Medicine') {
+      return 'Notes (Situation after giving medicine)';
+    }
 
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => deleteRecord(item.id)}
-      >
-        <Text style={styles.deleteText}>Delete</Text>
-      </TouchableOpacity>
-    </View>
-  );
+    return 'Notes (Optional)';
+  };
+
+  const renderRecord = ({ item }: { item: HealthRecord }) => {
+    let descriptionLabel = 'Description';
+
+    if (item.recordType === 'Vaccination') {
+      descriptionLabel = 'Vaccine Name';
+    } else if (item.recordType === 'Medicine') {
+      descriptionLabel = 'Medicine Name';
+    } else if (item.recordType === 'Checkup') {
+      descriptionLabel = 'Checkup Type';
+    }
+
+    return (
+      <View style={styles.recordCard}>
+        <Text style={styles.petName}>
+          {item.petName ?? 'Unknown Pet'}
+        </Text>
+
+        <Text style={styles.recordType}>{item.recordType}</Text>
+        <Text style={styles.detail}>Date: {item.date}</Text>
+
+        <Text style={styles.detail}>
+          {descriptionLabel}: {item.description}
+        </Text>
+
+        {item.notes ? (
+          <Text style={styles.detail}>
+            {item.recordType === 'Vaccination'
+              ? 'Situation after vaccination'
+              : item.recordType === 'Medicine'
+              ? 'Situation after giving medicine'
+              : 'Notes'}: {item.notes}
+          </Text>
+        ) : null}
+
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => deleteRecord(item.id)}
+        >
+          <Text style={styles.deleteText}>Delete</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.heading}>Pet Health Records</Text>
+
       <Text style={styles.subtitle}>
         Manage your pets' health information
       </Text>
@@ -145,9 +243,7 @@ export default function HealthRecordsScreen() {
           <Text style={styles.label}>Select Pet</Text>
 
           {pets.length === 0 ? (
-            <Text style={styles.detail}>
-              Please add a pet first.
-            </Text>
+            <Text style={styles.detail}>Please add a pet first.</Text>
           ) : (
             pets.map((pet) => (
               <TouchableOpacity
@@ -158,9 +254,7 @@ export default function HealthRecordsScreen() {
                 ]}
                 onPress={() => setSelectedPet(pet.id)}
               >
-                <Text style={styles.petOptionText}>
-                  {pet.name}
-                </Text>
+                <Text style={styles.petOptionText}>{pet.name}</Text>
               </TouchableOpacity>
             ))
           )}
@@ -175,7 +269,7 @@ export default function HealthRecordsScreen() {
                   styles.typeButton,
                   recordType === type && styles.selectedType,
                 ]}
-                onPress={() => setRecordType(type)}
+                onPress={() => changeRecordType(type)}
               >
                 <Text style={styles.typeText}>{type}</Text>
               </TouchableOpacity>
@@ -183,25 +277,92 @@ export default function HealthRecordsScreen() {
           </View>
 
           <Text style={styles.label}>Date (YYYY-MM-DD)</Text>
+
           <TextInput
             style={styles.input}
-            placeholder="2026-11-11"
+            placeholder="2026-11-14"
             value={date}
             onChangeText={setDate}
           />
 
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter health details"
-            value={description}
-            onChangeText={setDescription}
-          />
+          {recordType === 'Checkup' ? (
+            <>
+              <Text style={styles.label}>Checkup Type</Text>
 
-          <Text style={styles.label}>Notes (Optional)</Text>
+              <TouchableOpacity
+                style={styles.dropdown}
+                onPress={() =>
+                  setShowCheckupOptions(!showCheckupOptions)
+                }
+              >
+                <Text style={styles.dropdownText}>
+                  {selectedCheckup || 'Select Checkup Type'}
+                </Text>
+                <Text style={styles.dropdownArrow}>
+                  {showCheckupOptions ? '▲' : '▼'}
+                </Text>
+              </TouchableOpacity>
+
+              {showCheckupOptions && (
+                <View style={styles.dropdownOptions}>
+                  {checkupTypes.map((type) => (
+                    <TouchableOpacity
+                      key={type}
+                      style={styles.dropdownOption}
+                      onPress={() => {
+                        setSelectedCheckup(type);
+                        setOtherCheckup('');
+                        setShowCheckupOptions(false);
+                      }}
+                    >
+                      <Text style={styles.dropdownOptionText}>{type}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+
+              {selectedCheckup === 'Other' && (
+                <>
+                  <Text style={styles.label}>Enter Other Checkup Type</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter checkup type"
+                    value={otherCheckup}
+                    onChangeText={setOtherCheckup}
+                  />
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <Text style={styles.label}>
+                {getDescriptionLabel()}
+              </Text>
+
+              <TextInput
+                style={styles.input}
+                placeholder={
+                  recordType === 'Vaccination'
+                    ? 'Enter vaccine name'
+                    : 'Enter medicine name'
+                }
+                value={description}
+                onChangeText={setDescription}
+              />
+            </>
+          )}
+
+          <Text style={styles.label}>{getNotesLabel()}</Text>
+
           <TextInput
             style={[styles.input, styles.notesInput]}
-            placeholder="Additional notes"
+            placeholder={
+              recordType === 'Vaccination'
+                ? 'Describe the pet situation after vaccination'
+                : recordType === 'Medicine'
+                ? 'Describe the pet situation after giving medicine'
+                : 'Additional notes (optional)'
+            }
             value={notes}
             onChangeText={setNotes}
             multiline
@@ -346,6 +507,40 @@ const styles = StyleSheet.create({
   typeText: {
     color: '#25334A',
     fontWeight: '600',
+  },
+  dropdown: {
+    backgroundColor: '#F3F5F7',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 13,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dropdownText: {
+    color: '#25334A',
+    fontSize: 14,
+  },
+  dropdownArrow: {
+    color: '#25334A',
+  },
+  dropdownOptions: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginTop: 5,
+    overflow: 'hidden',
+  },
+  dropdownOption: {
+    padding: 13,
+    backgroundColor: '#F7F8FA',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  dropdownOptionText: {
+    color: '#25334A',
+    fontSize: 14,
   },
   saveButton: {
     backgroundColor: '#25334A',
