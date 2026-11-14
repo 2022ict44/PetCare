@@ -5,7 +5,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  FlatList,
   StyleSheet,
   Alert,
   ScrollView,
@@ -23,6 +22,9 @@ import {
 type Pet = {
   id: number;
   name: string;
+  type: string;
+  breed: string;
+  age: string;
 };
 
 const checkupTypes = [
@@ -37,6 +39,11 @@ const checkupTypes = [
 export default function HealthRecordsScreen() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [records, setRecords] = useState<HealthRecord[]>([]);
+
+  // Selected pet profile
+  const [activePetId, setActivePetId] = useState<number | null>(null);
+
+  // Pet selected for adding a record
   const [selectedPet, setSelectedPet] = useState<number | null>(null);
 
   const [recordType, setRecordType] = useState('Vaccination');
@@ -47,7 +54,6 @@ export default function HealthRecordsScreen() {
   const [selectedCheckup, setSelectedCheckup] = useState('');
   const [otherCheckup, setOtherCheckup] = useState('');
   const [showCheckupOptions, setShowCheckupOptions] = useState(false);
-
   const [showForm, setShowForm] = useState(false);
 
   const loadData = () => {
@@ -61,7 +67,14 @@ export default function HealthRecordsScreen() {
     }, [])
   );
 
+  const activePet = pets.find((pet) => pet.id === activePetId);
+
+  const petRecords = activePetId
+    ? records.filter((record) => record.petId === activePetId)
+    : [];
+
   const resetForm = () => {
+    setSelectedPet(null);
     setDate('');
     setDescription('');
     setNotes('');
@@ -99,7 +112,10 @@ export default function HealthRecordsScreen() {
 
     if (recordType === 'Checkup') {
       if (!selectedCheckup) {
-        Alert.alert('Missing Information', 'Please select a checkup type.');
+        Alert.alert(
+          'Missing Information',
+          'Please select a checkup type.'
+        );
         return;
       }
 
@@ -109,7 +125,10 @@ export default function HealthRecordsScreen() {
           : selectedCheckup;
 
       if (!finalDescription) {
-        Alert.alert('Missing Information', 'Please enter the checkup type.');
+        Alert.alert(
+          'Missing Information',
+          'Please enter the checkup type.'
+        );
         return;
       }
     } else if (!finalDescription) {
@@ -155,10 +174,6 @@ export default function HealthRecordsScreen() {
     );
   };
 
-  const filteredRecords = selectedPet
-    ? records.filter((record) => record.petId === selectedPet)
-    : records;
-
   const getDescriptionLabel = () => {
     if (recordType === 'Vaccination') return 'Vaccine Name';
     if (recordType === 'Medicine') return 'Medicine Name';
@@ -177,7 +192,7 @@ export default function HealthRecordsScreen() {
     return 'Notes (Optional)';
   };
 
-  const renderRecord = ({ item }: { item: HealthRecord }) => {
+  const renderRecord = (item: HealthRecord) => {
     let descriptionLabel = 'Description';
 
     if (item.recordType === 'Vaccination') {
@@ -189,12 +204,9 @@ export default function HealthRecordsScreen() {
     }
 
     return (
-      <View style={styles.recordCard}>
-        <Text style={styles.petName}>
-          {item.petName ?? 'Unknown Pet'}
-        </Text>
-
+      <View key={item.id} style={styles.recordCard}>
         <Text style={styles.recordType}>{item.recordType}</Text>
+
         <Text style={styles.detail}>Date: {item.date}</Text>
 
         <Text style={styles.detail}>
@@ -226,195 +238,281 @@ export default function HealthRecordsScreen() {
       <Text style={styles.heading}>Pet Health Records</Text>
 
       <Text style={styles.subtitle}>
-        Manage your pets' health information
+        View and manage each pet's health information
       </Text>
 
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => setShowForm(!showForm)}
-      >
-        <Text style={styles.addButtonText}>
-          {showForm ? 'Cancel' : '+ Add Health Record'}
-        </Text>
-      </TouchableOpacity>
+      {activePetId === null ? (
+        <>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setShowForm(!showForm)}
+          >
+            <Text style={styles.addButtonText}>
+              {showForm ? 'Cancel' : '+ Add Health Record'}
+            </Text>
+          </TouchableOpacity>
 
-      {showForm && (
-        <View style={styles.form}>
-          <Text style={styles.label}>Select Pet</Text>
+          {showForm && (
+            <View style={styles.form}>
+              <Text style={styles.formHeading}>Add Health Record</Text>
 
-          {pets.length === 0 ? (
-            <Text style={styles.detail}>Please add a pet first.</Text>
-          ) : (
-            pets.map((pet) => (
-              <TouchableOpacity
-                key={pet.id}
-                style={[
-                  styles.petOption,
-                  selectedPet === pet.id && styles.selectedPet,
-                ]}
-                onPress={() => setSelectedPet(pet.id)}
-              >
-                <Text style={styles.petOptionText}>{pet.name}</Text>
-              </TouchableOpacity>
-            ))
-          )}
+              <Text style={styles.label}>Select Pet</Text>
 
-          <Text style={styles.label}>Record Type</Text>
-
-          <View style={styles.typeContainer}>
-            {['Vaccination', 'Checkup', 'Medicine'].map((type) => (
-              <TouchableOpacity
-                key={type}
-                style={[
-                  styles.typeButton,
-                  recordType === type && styles.selectedType,
-                ]}
-                onPress={() => changeRecordType(type)}
-              >
-                <Text style={styles.typeText}>{type}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <Text style={styles.label}>Date (YYYY-MM-DD)</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="2026-11-14"
-            value={date}
-            onChangeText={setDate}
-          />
-
-          {recordType === 'Checkup' ? (
-            <>
-              <Text style={styles.label}>Checkup Type</Text>
-
-              <TouchableOpacity
-                style={styles.dropdown}
-                onPress={() =>
-                  setShowCheckupOptions(!showCheckupOptions)
-                }
-              >
-                <Text style={styles.dropdownText}>
-                  {selectedCheckup || 'Select Checkup Type'}
+              {pets.length === 0 ? (
+                <Text style={styles.detail}>
+                  Please add a pet first.
                 </Text>
-                <Text style={styles.dropdownArrow}>
-                  {showCheckupOptions ? '▲' : '▼'}
-                </Text>
-              </TouchableOpacity>
-
-              {showCheckupOptions && (
-                <View style={styles.dropdownOptions}>
-                  {checkupTypes.map((type) => (
-                    <TouchableOpacity
-                      key={type}
-                      style={styles.dropdownOption}
-                      onPress={() => {
-                        setSelectedCheckup(type);
-                        setOtherCheckup('');
-                        setShowCheckupOptions(false);
-                      }}
-                    >
-                      <Text style={styles.dropdownOptionText}>{type}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+              ) : (
+                pets.map((pet) => (
+                  <TouchableOpacity
+                    key={pet.id}
+                    style={[
+                      styles.petOption,
+                      selectedPet === pet.id && styles.selectedPet,
+                    ]}
+                    onPress={() => setSelectedPet(pet.id)}
+                  >
+                    <Text style={styles.petOptionText}>
+                      {pet.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))
               )}
 
-              {selectedCheckup === 'Other' && (
-                <>
-                  <Text style={styles.label}>Enter Other Checkup Type</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter checkup type"
-                    value={otherCheckup}
-                    onChangeText={setOtherCheckup}
-                  />
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              <Text style={styles.label}>
-                {getDescriptionLabel()}
-              </Text>
+              <Text style={styles.label}>Record Type</Text>
+
+              <View style={styles.typeContainer}>
+                {['Vaccination', 'Checkup', 'Medicine'].map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    style={[
+                      styles.typeButton,
+                      recordType === type && styles.selectedType,
+                    ]}
+                    onPress={() => changeRecordType(type)}
+                  >
+                    <Text style={styles.typeText}>{type}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.label}>Date (YYYY-MM-DD)</Text>
 
               <TextInput
                 style={styles.input}
+                placeholder="2026-11-14"
+                value={date}
+                onChangeText={setDate}
+              />
+
+              {recordType === 'Checkup' ? (
+                <>
+                  <Text style={styles.label}>Checkup Type</Text>
+
+                  <TouchableOpacity
+                    style={styles.dropdown}
+                    onPress={() =>
+                      setShowCheckupOptions(!showCheckupOptions)
+                    }
+                  >
+                    <Text style={styles.dropdownText}>
+                      {selectedCheckup || 'Select Checkup Type'}
+                    </Text>
+                    <Text style={styles.dropdownArrow}>
+                      {showCheckupOptions ? '▲' : '▼'}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {showCheckupOptions && (
+                    <View style={styles.dropdownOptions}>
+                      {checkupTypes.map((type) => (
+                        <TouchableOpacity
+                          key={type}
+                          style={styles.dropdownOption}
+                          onPress={() => {
+                            setSelectedCheckup(type);
+                            setOtherCheckup('');
+                            setShowCheckupOptions(false);
+                          }}
+                        >
+                          <Text style={styles.dropdownOptionText}>
+                            {type}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+
+                  {selectedCheckup === 'Other' && (
+                    <>
+                      <Text style={styles.label}>
+                        Enter Other Checkup Type
+                      </Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Enter checkup type"
+                        value={otherCheckup}
+                        onChangeText={setOtherCheckup}
+                      />
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Text style={styles.label}>
+                    {getDescriptionLabel()}
+                  </Text>
+
+                  <TextInput
+                    style={styles.input}
+                    placeholder={
+                      recordType === 'Vaccination'
+                        ? 'Enter vaccine name'
+                        : 'Enter medicine name'
+                    }
+                    value={description}
+                    onChangeText={setDescription}
+                  />
+                </>
+              )}
+
+              <Text style={styles.label}>{getNotesLabel()}</Text>
+
+              <TextInput
+                style={[styles.input, styles.notesInput]}
                 placeholder={
                   recordType === 'Vaccination'
-                    ? 'Enter vaccine name'
-                    : 'Enter medicine name'
+                    ? 'Describe the pet situation after vaccination'
+                    : recordType === 'Medicine'
+                    ? 'Describe the pet situation after giving medicine'
+                    : 'Additional notes (optional)'
                 }
-                value={description}
-                onChangeText={setDescription}
+                value={notes}
+                onChangeText={setNotes}
+                multiline
               />
-            </>
+
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={addRecord}
+              >
+                <Text style={styles.saveButtonText}>
+                  Save Record
+                </Text>
+              </TouchableOpacity>
+            </View>
           )}
 
-          <Text style={styles.label}>{getNotesLabel()}</Text>
+          <Text style={styles.sectionHeading}>
+            Select a Pet Profile
+          </Text>
 
-          <TextInput
-            style={[styles.input, styles.notesInput]}
-            placeholder={
-              recordType === 'Vaccination'
-                ? 'Describe the pet situation after vaccination'
-                : recordType === 'Medicine'
-                ? 'Describe the pet situation after giving medicine'
-                : 'Additional notes (optional)'
-            }
-            value={notes}
-            onChangeText={setNotes}
-            multiline
-          />
+          {pets.length === 0 ? (
+            <Text style={styles.emptyText}>
+              No pets added yet. Please add a pet first.
+            </Text>
+          ) : (
+            pets.map((pet) => {
+              const count = records.filter(
+                (record) => record.petId === pet.id
+              ).length;
 
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={addRecord}
-          >
-            <Text style={styles.saveButtonText}>Save Record</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+              return (
+                <TouchableOpacity
+                  key={pet.id}
+                  style={styles.profileCard}
+                  onPress={() => setActivePetId(pet.id)}
+                >
+                  <View style={styles.profileIcon}>
+                    <Text style={styles.profileIconText}>
+                      {pet.type.toLowerCase().includes('cat')
+                        ? '🐱'
+                        : pet.type.toLowerCase().includes('dog')
+                        ? '🐶'
+                        : '🐾'}
+                    </Text>
+                  </View>
 
-      <Text style={styles.sectionHeading}>Health History</Text>
+                  <View style={styles.profileInfo}>
+                    <Text style={styles.profileName}>
+                      {pet.name}
+                    </Text>
+                    <Text style={styles.profileDetails}>
+                      {pet.type}
+                      {pet.breed ? ` • ${pet.breed}` : ''}
+                    </Text>
+                    <Text style={styles.profileCount}>
+                      {count} Health Record{count !== 1 ? 's' : ''}
+                    </Text>
+                  </View>
 
-      <View style={styles.filterContainer}>
-        <TouchableOpacity
-          style={[
-            styles.filterButton,
-            selectedPet === null && styles.selectedType,
-          ]}
-          onPress={() => setSelectedPet(null)}
-        >
-          <Text style={styles.typeText}>All Pets</Text>
-        </TouchableOpacity>
-
-        {pets.map((pet) => (
-          <TouchableOpacity
-            key={pet.id}
-            style={[
-              styles.filterButton,
-              selectedPet === pet.id && styles.selectedType,
-            ]}
-            onPress={() => setSelectedPet(pet.id)}
-          >
-            <Text style={styles.typeText}>{pet.name}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {filteredRecords.length === 0 ? (
-        <Text style={styles.emptyText}>
-          No health records found.
-        </Text>
+                  <Text style={styles.arrow}>›</Text>
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </>
       ) : (
-        <FlatList
-          data={filteredRecords}
-          renderItem={renderRecord}
-          keyExtractor={(item) => item.id.toString()}
-          scrollEnabled={false}
-        />
+        <>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              setActivePetId(null);
+              setShowForm(false);
+            }}
+          >
+            <Text style={styles.backButtonText}>
+              ‹ Back to All Pets
+            </Text>
+          </TouchableOpacity>
+
+          {activePet && (
+            <View style={styles.petProfile}>
+              <View style={styles.largeProfileIcon}>
+                <Text style={styles.largeProfileIconText}>
+                  {activePet.type.toLowerCase().includes('cat')
+                    ? '🐱'
+                    : activePet.type.toLowerCase().includes('dog')
+                    ? '🐶'
+                    : '🐾'}
+                </Text>
+              </View>
+
+              <Text style={styles.profileTitle}>
+                {activePet.name}
+              </Text>
+
+              <Text style={styles.profileDetails}>
+                {activePet.type}
+              </Text>
+
+              <Text style={styles.detail}>
+                Breed: {activePet.breed || 'Not specified'}
+              </Text>
+
+              <Text style={styles.detail}>
+                Age: {activePet.age || 'Not specified'}
+              </Text>
+
+              <Text style={styles.profileCount}>
+                {petRecords.length} Health Record
+                {petRecords.length !== 1 ? 's' : ''}
+              </Text>
+            </View>
+          )}
+
+          <Text style={styles.sectionHeading}>
+            {activePet?.name}'s Health History
+          </Text>
+
+          {petRecords.length === 0 ? (
+            <Text style={styles.emptyText}>
+              No health records found for this pet.
+            </Text>
+          ) : (
+            petRecords.map(renderRecord)
+          )}
+        </>
       )}
     </ScrollView>
   );
@@ -455,6 +553,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 20,
+  },
+  formHeading: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#25334A',
+    marginBottom: 8,
   },
   label: {
     fontSize: 15,
@@ -558,19 +662,87 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#25334A',
     marginBottom: 12,
+    marginTop: 10,
   },
-  filterContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 15,
-  },
-  filterButton: {
-    padding: 9,
-    backgroundColor: '#F3F5F7',
-    borderRadius: 8,
+  profileCard: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#eee',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profileIcon: {
+    width: 55,
+    height: 55,
+    borderRadius: 28,
+    backgroundColor: '#E0F2EC',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileIconText: {
+    fontSize: 28,
+  },
+  profileInfo: {
+    flex: 1,
+    marginLeft: 13,
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#25334A',
+  },
+  profileDetails: {
+    fontSize: 13,
+    color: '#777',
+    marginTop: 4,
+  },
+  profileCount: {
+    fontSize: 13,
+    color: '#4B9B83',
+    fontWeight: '600',
+    marginTop: 6,
+  },
+  arrow: {
+    fontSize: 28,
+    color: '#4B9B83',
+    marginLeft: 8,
+  },
+  backButton: {
+    paddingVertical: 12,
+    marginBottom: 12,
+  },
+  backButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4B9B83',
+  },
+  petProfile: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  largeProfileIcon: {
+    width: 85,
+    height: 85,
+    borderRadius: 43,
+    backgroundColor: '#E0F2EC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  largeProfileIconText: {
+    fontSize: 45,
+  },
+  profileTitle: {
+    fontSize: 23,
+    fontWeight: 'bold',
+    color: '#25334A',
+    marginBottom: 4,
   },
   recordCard: {
     backgroundColor: '#fff',
@@ -580,15 +752,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#eee',
   },
-  petName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#25334A',
-  },
   recordType: {
     color: '#4B9B83',
     fontWeight: 'bold',
-    marginTop: 5,
+    fontSize: 16,
   },
   detail: {
     color: '#555',
@@ -608,5 +775,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#888',
     marginTop: 25,
+    marginBottom: 20,
   },
 });
