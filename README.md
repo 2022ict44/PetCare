@@ -2,30 +2,32 @@
 
 ## 📌 Project Overview
 
-PetCare is a mobile application developed using React Native to help pet owners manage their pets and their daily care activities.
+PetCare is a mobile application developed using React Native to help pet owners manage their pets and their daily care needs.
 
-The application allows users to store pet information, manage activities, schedule reminders, and maintain pet health records. It uses a local SQLite database to store information on the device and supports offline functionality.
+The application allows users to store pet information, manage reminders, maintain pet health records, and access useful pet care guides. It uses a local SQLite database to store information on the device and supports offline functionality.
 
 ## ✨ Main Features
 
 ### 🐶 Pet Management
 - Add new pets.
 - View saved pet details.
-- Search pets by name, type, and breed.
-- Filter pets by category.
+- Store pet information in the local database.
 - Delete pet records.
 
-### 📋 Activity Management
-- Add pet care activities.
-- View saved activities.
-- Delete activities.
+### 📚 Pet Care Guide
+- Access pet care guides for different types of pets.
+- Browse guides for dogs, cats, birds, and other pets.
+- Filter guides by pet type.
+- Filter guides by category.
+- Search guides by title and description.
+- Read detailed pet care information.
 
 ### ⏰ Reminder Management
 - Create reminders with dates and times.
 - Schedule local notifications.
 - View saved reminders.
-- Delete reminders and cancel their scheduled notifications.
-- Validate date and time inputs.
+- Delete reminders.
+- Cancel scheduled notifications when reminders are deleted.
 
 ### 🩺 Health Records Management
 - Add health records for pets.
@@ -37,9 +39,9 @@ The application allows users to store pet information, manage activities, schedu
 
 ### 🏠 Home Dashboard
 - View a summary of pet information.
-- Display activity and reminder counts.
-- Display the total number of health records.
-- Navigate between application screens.
+- Display the total number of saved pets.
+- Display the total number of pet care guides.
+- View reminder and health record information.
 
 ### 📶 Offline Functionality
 - Uses a local SQLite database.
@@ -52,7 +54,7 @@ PetCare contains five main screens:
 
 1. Home
 2. My Pets
-3. Activities
+3. Pet Guide
 4. Reminders
 5. Health Records
 
@@ -76,9 +78,9 @@ PetCare uses SQLite as its local database.
 The database contains the following tables:
 
 - `pets` – Stores pet information.
-- `activities` – Stores pet care activities.
 - `reminders` – Stores reminder details and notification IDs.
-- `health_records` – Stores pet health records, including record type, date, description, and notes.
+- `health_records` – Stores pet health records.
+- `pet_guides` – Stores pet care guide information.
 
 All application data is stored locally on the device.
 
@@ -126,17 +128,41 @@ Make sure you have the following installed:
 The following functionalities have been tested:
 
 - Adding and deleting pets.
-- Searching and filtering pets.
-- Managing pet activities.
+- Viewing saved pet details.
+- Accessing pet care guides.
+- Filtering guides by pet type and category.
+- Searching pet care guides.
+- Viewing detailed guide information.
 - Creating and deleting reminders.
 - Local notification scheduling.
 - Adding and deleting health records.
 - Filtering health records by type.
-- Displaying the total health record count on the Home Dashboard.
 - Navigation between all five screens.
 - Input validation.
-- Offline functionality with Airplane Mode enabled while the app was running.
+- Offline functionality.
 - Data persistence after closing and reopening the app.
+
+## 📸 Application Screenshots
+
+The following screenshots demonstrate the main application screens:
+
+### Home Screen
+![Home Screen](screenshots/home.png)
+
+### My Pets Screen
+![My Pets Screen](screenshots/my-pets.png)
+
+### Pet Guide Screen
+![Pet Guide Screen](screenshots/pet-guide.png)
+
+### Reminders Screen
+![Reminders Screen](screenshots/reminders.png)
+
+### Health Records Screen
+![Health Records Screen](screenshots/health-records.png)
+
+### Additional Application Features
+
 
 ## 👩‍💻 Developer
 

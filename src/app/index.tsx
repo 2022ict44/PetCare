@@ -12,12 +12,20 @@ import { useFocusEffect } from 'expo-router';
 import {
   initDatabase,
   getAllPets,
+<<<<<<< HEAD
+=======
+  getAllGuides,
+>>>>>>> 7e2cf65d54cd4110204943a5faaff7c954952ce3
   getAllReminders,
   getAllHealthRecords,
 } from '../database/petDatabase';
 export default function HomeScreen() {
   const [petCount, setPetCount] = useState(0);
+<<<<<<< HEAD
   
+=======
+  const [guideCount, setGuideCount] = useState(0);
+>>>>>>> 7e2cf65d54cd4110204943a5faaff7c954952ce3
   const [reminderCount, setReminderCount] = useState(0);
   const [healthRecordCount, setHealthRecordCount] = useState(0);
 
@@ -27,12 +35,20 @@ export default function HomeScreen() {
       initDatabase();
 
       const pets = getAllPets();
+<<<<<<< HEAD
       
+=======
+      const guides = getAllGuides();
+>>>>>>> 7e2cf65d54cd4110204943a5faaff7c954952ce3
       const reminders = getAllReminders();
       const healthRecords = getAllHealthRecords();
 
       setPetCount(pets.length);
+<<<<<<< HEAD
       
+=======
+      setGuideCount(guides.length);
+>>>>>>> 7e2cf65d54cd4110204943a5faaff7c954952ce3
       setReminderCount(reminders.length);
       setHealthRecordCount(healthRecords.length);
     } catch (error) {
@@ -96,7 +112,22 @@ export default function HomeScreen() {
             </Text>
           </View>
 
+<<<<<<< HEAD
           
+=======
+          {/* Pet Guide Count */}
+          <View style={styles.summaryCard}>
+            <Text style={styles.cardEmoji}>📖</Text>
+
+            <Text style={styles.cardNumber}>
+              {guideCount}
+            </Text>
+
+            <Text style={styles.cardLabel}>
+              Pet Guides
+            </Text>
+          </View>
+>>>>>>> 7e2cf65d54cd4110204943a5faaff7c954952ce3
 
         </View>
 
@@ -130,7 +161,12 @@ export default function HomeScreen() {
           </View>
         </View>
 
+<<<<<<< HEAD
        
+=======
+        
+          
+>>>>>>> 7e2cf65d54cd4110204943a5faaff7c954952ce3
 
         <Text style={styles.footer}>
           Made with ❤️ for your lovely pets
