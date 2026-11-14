@@ -12,14 +12,12 @@ import { useFocusEffect } from 'expo-router';
 import {
   initDatabase,
   getAllPets,
-  getAllActivities,
   getAllReminders,
   getAllHealthRecords,
 } from '../database/petDatabase';
-
 export default function HomeScreen() {
   const [petCount, setPetCount] = useState(0);
-  const [activityCount, setActivityCount] = useState(0);
+  
   const [reminderCount, setReminderCount] = useState(0);
   const [healthRecordCount, setHealthRecordCount] = useState(0);
 
@@ -29,12 +27,12 @@ export default function HomeScreen() {
       initDatabase();
 
       const pets = getAllPets();
-      const activities = getAllActivities();
+      
       const reminders = getAllReminders();
       const healthRecords = getAllHealthRecords();
 
       setPetCount(pets.length);
-      setActivityCount(activities.length);
+      
       setReminderCount(reminders.length);
       setHealthRecordCount(healthRecords.length);
     } catch (error) {
@@ -98,18 +96,7 @@ export default function HomeScreen() {
             </Text>
           </View>
 
-          {/* Activity Count */}
-          <View style={styles.summaryCard}>
-            <Text style={styles.cardEmoji}>📅</Text>
-
-            <Text style={styles.cardNumber}>
-              {activityCount}
-            </Text>
-
-            <Text style={styles.cardLabel}>
-              Activities
-            </Text>
-          </View>
+          
 
         </View>
 
@@ -143,66 +130,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Quick Actions */}
-        <Text style={styles.sectionTitle}>
-          Quick Access
-        </Text>
-
-        <View style={styles.actionCard}>
-          <Text style={styles.actionEmoji}>🐶</Text>
-
-          <View>
-            <Text style={styles.actionTitle}>
-              My Pets
-            </Text>
-
-            <Text style={styles.actionDescription}>
-              Manage your pet information
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.actionCard}>
-          <Text style={styles.actionEmoji}>⏰</Text>
-
-          <View>
-            <Text style={styles.actionTitle}>
-              Care Schedule
-            </Text>
-
-            <Text style={styles.actionDescription}>
-              Remember feeding and daily care
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.actionCard}>
-          <Text style={styles.actionEmoji}>🏥</Text>
-
-          <View>
-            <Text style={styles.actionTitle}>
-              Health Records
-            </Text>
-
-            <Text style={styles.actionDescription}>
-              Keep track of vaccinations and health
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.actionCard}>
-          <Text style={styles.actionEmoji}>🏃</Text>
-
-          <View>
-            <Text style={styles.actionTitle}>
-              Activity History
-            </Text>
-
-            <Text style={styles.actionDescription}>
-              View your pet's daily activities
-            </Text>
-          </View>
-        </View>
+       
 
         <Text style={styles.footer}>
           Made with ❤️ for your lovely pets
